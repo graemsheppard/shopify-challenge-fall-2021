@@ -1,7 +1,7 @@
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Movie, { MovieProps } from './movie';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { omdbKey } from '../settings.json';
 
 export interface SearchMoviesProps {
@@ -14,8 +14,11 @@ export interface SearchMoviesState {
  
 class SearchMovies extends React.Component<SearchMoviesProps, SearchMoviesState> {
     
+    private requestId: number;
+
     constructor(props: SearchMoviesProps) {
         super(props);
+        this.requestId = 0;
         this.state = { 
             movies: []
         };
@@ -88,13 +91,50 @@ class SearchMovies extends React.Component<SearchMoviesProps, SearchMoviesState>
         
     }
 
+    async fetchMovies(query: string) {
+        
+        let id = this.requestId;
+        await fetch(`https://www.omdbapi.com/?apikey=${omdbKey}&s=${query}`)
+        .then((response: Response) => {
+            if (!response.ok) throw new Error("Failed to fetch data");
+            return response.json();
+        })
+        .then((data: any): MovieProps[] => {
+            // Group the data on id because omdb can return duplicates
+            let grouped: {[id: string]: MovieProps} = {};
+            data.Search.forEach((x: any) => {
+                grouped[x.imdbID] = { title: x.Title, imdbID: x.imdbID, url: x.Poster };
+            });
+            let results: MovieProps[] = [];
+            for (let key in grouped) {
+                results.push(grouped[key]);
+            }
+            return results;
+            
+        })
+        .then((movies: MovieProps[]) => {
+            // Only update the state if this is the most recent request
+            if (this.requestId === id) 
+                this.setState({ movies: movies });
+        })
+        .catch((e: Error) => {
+            console.log(e);
+        });
+        
+    }
+
+    handleKeyUp = (event: ChangeEvent<HTMLInputElement>) => {
+        this.requestId++;
+        this.fetchMovies(event.target.value);
+    }
+
     render() { 
         return (
             <React.Fragment>
                 <div className="input-group my-3">
-                    <input type="text" className="form-control form-control-lg" placeholder="Search Movies" aria-label="Search Movies" aria-describedby="basic-addon2" />
+                    <input onChange={this.handleKeyUp} type="text" className="form-control form-control-lg" placeholder="Search Movies" aria-label="Search Movies" aria-describedby="basic-addon2" />
                     <div className="input-group-append">
-                        <button className="btn btn-secondary" type="button"><FontAwesomeIcon icon={faSearch} /></button>
+                        <button className="btn btn-green" type="button"><FontAwesomeIcon icon={faSearch} /></button>
                     </div>
                 </div>
                 <h4 className="my-4 text-dark">Showing Results ({this.state.movies.length})</h4>

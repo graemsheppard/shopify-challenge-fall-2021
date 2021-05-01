@@ -7,10 +7,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <div className="jumbotron jumbotron-fluid bg-secondary text-light text-center">
+    <div className="jumbotron jumbotron-fluid bg-green text-light text-center">
       <h1 className="display-1">The Shoppies</h1>
       <hr className="my-4 bg-light" />
-      <p className="lead">Nominate your favourite movies for the Shoppies!</p>
+      <h3 className="lead">Nominate your favourite movies for the Shoppies!</h3>
     </div>
     <div className="container">
       <SearchMovies />

@@ -13,15 +13,21 @@ code {
 }
 
 .movie-card {
-  max-width: 14rem;
-  min-width: 6 !important;
+  max-width: 16rem;
+  min-width: 10 !important;
   flex-grow: 1;
   flex-shrink: 1;
-  flex-basis: 10rem;
+  flex-basis: calc(13rem - 30px);
+}
+
+.movie-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .movie-card-img {
-  height: 14rem;
+  height: 16rem;
   object-fit: contain;
 }
 
@@ -30,5 +36,22 @@ code {
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
-  gap: 15px;
+  gap: 30px;
+}
+
+.bg-green {
+  background-color: rgb(65, 173, 51) !important;
+}
+
+.btn-green {
+  background-color: rgb(92, 201, 77) !important;
+}
+
+.btn-green:hover {
+  transition-duration: 200ms;
+  background-color: rgb(71, 155, 60) !important;
+}
+
+.btn-green > * {
+  color: white !important;
 }
