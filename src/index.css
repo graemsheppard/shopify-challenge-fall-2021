@@ -28,7 +28,7 @@ code {
 
 .movie-card-img {
   height: 16rem;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .movie-container {

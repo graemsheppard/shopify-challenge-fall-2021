@@ -1,25 +1,20 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import SearchMovies from './components/searchMovies';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <React.Fragment>
+      <div className="jumbotron jumbotron-fluid bg-secondary text-light text-center">
+        <h1 className="display-1">The Shoppies</h1>
+        <hr className="my-4 bg-light" />
+        <h3 className="lead">Nominate your favourite movies for the Shoppies!</h3>
+      </div>
+      <div className="container">
+        <SearchMovies />
+      </div>
+    </React.Fragment>
   );
 }
 
