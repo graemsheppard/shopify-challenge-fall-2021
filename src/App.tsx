@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import logo from "./logo.svg";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import * as FontAwesomeIcons from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MovieProps } from "./components/movie";
 import Movies, { MoviesProps } from "./components/movies";
@@ -8,11 +8,13 @@ import { omdbKey } from './settings.json';
 import "./App.css";
 
 
+
 interface AppProps {}
 
 interface AppState {
-  movies: MovieProps[];
-  nominations: MovieProps[];
+	movies: MovieProps[];
+	nominations: MovieProps[];
+	searching: boolean;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -25,6 +27,7 @@ class App extends React.Component<AppProps, AppState> {
 		this.state = {
 			movies: [],
 			nominations: [],
+			searching: false,
 		};
 	}
 
@@ -56,7 +59,7 @@ class App extends React.Component<AppProps, AppState> {
 		})
 		.then((movies: MovieProps[]) => {
 			// Only update the state if this is the most recent request
-			if (this.requestId === id) this.setState({ movies: movies });
+			if (this.requestId === id) this.setState({ movies: movies, searching: false });
 		})
 		.catch((e: Error) => {
 			console.log(e);
@@ -94,6 +97,7 @@ class App extends React.Component<AppProps, AppState> {
 	}
 
 	handleKeyUp = (event: ChangeEvent<HTMLInputElement>) => {
+		this.setState({searching: true });
 		this.requestId++;
 		// because I already used half of my api requests
 		clearTimeout(this.worker);
@@ -102,42 +106,58 @@ class App extends React.Component<AppProps, AppState> {
 		}, 300);
 	};
 
+	getSearchIcon(): JSX.Element {
+		if (this.state.searching)
+			return <FontAwesomeIcon icon={FontAwesomeIcons.faSpinner} spin></FontAwesomeIcon>
+		else
+			return <FontAwesomeIcon icon={FontAwesomeIcons.faSearch}></FontAwesomeIcon>
+	} 
+
 	render() {
 		return (
 			<React.Fragment>
-				<div className="jumbotron jumbotron-fluid bg-secondary text-light text-center">
+				<div className="jumbotron jumbotron-fluid bg-dark text-light text-center">
 					<h1 className="display-1">The Shoppies</h1>
-					<hr className="my-4 bg-light" />
-					<h3 className="lead">
-					Nominate your favourite movies for the Shoppies!
+					<h3 className="lead my-4">
+						Nominate your favourite movies for the Shoppies!
 					</h3>
+					<div className="container">
+						<div className="input-group">
+							<input
+								onChange={this.handleKeyUp}
+								type="text"
+								className="form-control form-control-lg"
+								placeholder="Search Movies"
+								aria-label="Search Movies"
+								aria-describedby="basic-addon2"
+							/>
+							<div className="input-group-append">
+								<button className="btn btn-light" type="button">
+									{this.getSearchIcon()}
+								</button>
+							</div>
+						</div>
+					</div>					
 				</div>
 				<div className="container">
-					<h4 className="my-4 text-dark">
-					Nominations ({this.state.nominations.length}/5)
-					</h4>
-					<hr className="my-4" />
-					<Movies movies={this.state.nominations} />
-					<div className="input-group my-4">
-						<input
-						onChange={this.handleKeyUp}
-						type="text"
-						className="form-control form-control-lg"
-						placeholder="Search Movies"
-						aria-label="Search Movies"
-						aria-describedby="basic-addon2"
-						/>
-						<div className="input-group-append">
-							<button className="btn btn-secondary" type="button">
-							<FontAwesomeIcon icon={faSearch} />
-							</button>
+					<div className="row mb-4">
+						<div className="col">
+							<h4 className="my-4 text-dark">
+								Nominations ({this.state.nominations.length}/5)
+							</h4>
+							<hr className="my-4 bg-light" />
+							<Movies movies={this.state.nominations} />
 						</div>
 					</div>
-					<h4 className="my-4 text-dark">
-					Showing Results ({this.state.movies.length})
-					</h4>
-					<hr className="my-4" />
-					<Movies movies={this.state.movies} />
+					<div className="row mt-4">
+						<div className="col">
+							<h4 className="my-4 text-dark">
+								Showing Results ({this.state.movies.length})
+							</h4>
+							<hr className="my-4" />
+							<Movies movies={this.state.movies} />
+						</div>
+					</div>					
 				</div>
 			</React.Fragment>
 		);
